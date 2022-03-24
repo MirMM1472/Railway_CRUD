@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta>
+  <title>@model.title</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <script type="Text/javascript" src="javascripts/jquery-3.6.0.min.js"></script>
+  <script type="Text/javascript" >
+  $("document").ready(function(){
+
+    const getTrainsList = (status) => {
+      $.ajax({
+        url: "list",
+        method: "GET",
+      }).done(function(data) {
+        console.log(data);
+        $('.t-button').hide();
+        const tableModel = `
+          <ul class="responsive-table">
+            <li class="table-header">
+              <div class="col col-2">Train Id</div>
+              <div class="col col-3">Train Name</div>
+              <div class="col col-2">Start Location</div>
+              <div class="col col-2">Destination Location</div>
+              <div class="col col-2">Capacity</div>
+              <div class="col col-2">Boggies</div>
+              <div class="col col-2">Ticket Price</div>
+              ${status ?  "<div class='col col-2'>Edit</div>" : null}
+            </li>
+              
+            ${data.map((train) => `
+               <li class="table-row">
+                <div class="col col-2" data-label="Train Id">${train.TrainId}</div>
+                <div class="col col-3" data-label="Train Name">${train.TrainName}</div>
+                <div class="col col-2" data-label="Start Location">${train.TrainStartLocation}</div>
+                <div class="col col-2" data-label="Destination Location">${train.TrainDestinationLocation}</div>
+                <div class="col col-2" data-label="Capacity">${train.TrainCapacity}</div>
+                <div class="col col-2" data-label="Boggies">${train.NoOfBoggies}</div>
+                <div class="col col-2" data-label="Ticket Price">${train.TicketPrice}</div>
+                 ${status ?  `<button class="col col-2 editIcon" data-label='Edit' value="${train._id}" >ICON</button>` : null}
+              </li>
+              `
+            ).join('')}
+          </ul>
+        `
+        $('#view-table').html(tableModel);
+      })
+    }
+
+    $('body').on('click','#view', function(){
+      getTrainsList()
+    })
+
+
+     $('body').on('click','#insert', function(){
+        $('.t-button').hide();
+        $('.form').show();
+     })
+
+     $('body').on('click','#save', function(){
+       const serialize = $('form').serialize();
+       console.log(serialize);
+       $.ajax({
+         url: 'Save',
+         method: 'GET',
+         data: serialize
+       }).done(function(results){
+         console.log("SAVED RESULT ========> ", results)
+         if(results.length > 0){
+            alert("Record inserted successfully");
+          }else{
+            alert("Something went wrong :(");
+          }
+        $('.t-button').show();
+        $('.form').hide();
+         
+       })
+     })
+
+      $('body').on('click','#update', function(){
+        getTrainsList(true)
+      })
+
+      $('body').on('click','.editIcon', function(){
+          // alert("edit")
+          alert($(this).val())
+      })
+
+  })
+  </script>
+</head>
+<body>
+      <div class="container"> 
+          <h1 class="t-heading">Railway CURD</h2>
+          <button class="t-button" id="insert">Insert Train Details</button>
+          <button class="t-button" id="view">View Train Details</button>
+          <button class="t-button" id="update">Update Train Details</button>
+
+          <div id="view-table"></div>
+
+          <form action="/Save" method="post" class="form" style="display: none">
+            <label for="TrainId">Train Id: </label><br>
+            <input type="text" id="TrainId" value="" name="TrainId" class="input"><br><br>
+
+            <label for="TrainName">Train Name: </label><br>
+            <input type="text" id="TrainName" value="" name="TrainName" class="input"><br><br>
+
+            <label for="TrainStartLocation">Start Location: </label><br>
+            <input type="text" id="TrainStartLocation" name="TrainStartLocation" value="" class="input"><br><br>
+
+            <label for="TrainDestinationLocation">Destination Location: </label><br>
+            <input type="text" id="TrainDestinationLocation" name="TrainDestinationLocation" value="" class="input"><br><br>
+
+            <label for="TrainCapacity">Capacity: </label><br>
+            <input type="number" id="TrainCapacity" name="TrainCapacity" value="" class="input"><br><br>
+
+            <label for="NoOfBoggies">Boggies: </label><br>
+            <input type="number" id="NoOfBoggies" name="NoOfBoggies" value="" class="input"><br><br>
+
+            <label for="TicketPrice">Ticket Price: </label><br>
+            <input type="number" id="TicketPrice" name="TicketPrice" value="" class="input"><br><br>
+
+            <input type="button" value="Save" class="submit" id='save'>
+          </form>
+          <hr>
+      </div>
+</body>
+</html>
