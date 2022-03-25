@@ -54,51 +54,9 @@
 
      $('body').on('click','#insert', function(){
         $('.t-button').hide();
-        $('.form').show();
-     })
-
-     $('body').on('click','#save', function(){
-       const serialize = $('form').serialize();
-       console.log(serialize);
-       $.ajax({
-         url: 'Save',
-         method: 'GET',
-         data: serialize
-       }).done(function(results){
-         console.log("SAVED RESULT ========> ", results)
-         if(results.length > 0){
-            alert("Record inserted successfully");
-          }else{
-            alert("Something went wrong :(");
-          }
-        $('.t-button').show();
-        $('.form').hide();
-         
-       })
-     })
-
-      $('body').on('click','#update', function(){
-        getTrainsList(true)
-      })
-
-      $('body').on('click','.editIcon', function(){
-          // alert("edit")
-          alert($(this).val())
-      })
-
-  })
-  </script>
-</head>
-<body>
-      <div class="container"> 
-          <h1 class="t-heading">Railway CURD</h2>
-          <button class="t-button" id="insert">Insert Train Details</button>
-          <button class="t-button" id="view">View Train Details</button>
-          <button class="t-button" id="update">Update Train Details</button>
-
-          <div id="view-table"></div>
-
-          <form action="/Save" method="post" class="form" style="display: none">
+        // $('.form').show();
+        const insertForm = `
+          <form action="/Save" method="post" class="form">
             <label for="TrainId">Train Id: </label><br>
             <input type="text" id="TrainId" value="" name="TrainId" class="input"><br><br>
 
@@ -121,6 +79,135 @@
             <input type="number" id="TicketPrice" name="TicketPrice" value="" class="input"><br><br>
 
             <input type="button" value="Save" class="submit" id='save'>
+          </form>
+        `
+        $('#insertForm').html(insertForm)
+     })
+
+     $('body').on('click','#save', function(data){
+       const serialize = $('form').serialize();
+       console.log(serialize);
+       $.ajax({
+         url: 'Save',
+         method: 'GET',
+         data: serialize
+       }).done(function(results){
+         console.log("SAVED RESULT ========> ", results)
+         if(results.length > 0){
+            alert("Record inserted successfully");
+          }else{
+            alert("Something went wrong :(");
+          }
+        $('.t-button').show();
+        // $('.form').hi;
+        $(".form").css("display","none");
+         
+       })
+     })
+
+      $('body').on('click','#update', function(){
+        getTrainsList(true)
+      })
+
+      $('body').on('click','.editIcon', function(){
+          // alert("edit")
+          // alert($(this).val())
+          
+          $('.form1').show();
+          $.ajax({
+            url: 'getTrain',
+            method: 'GET',
+            data: {id: $(this).val()}
+          }).done(function(trainData){
+            console.log(trainData.TrainId)
+             $('.form').show();
+            console.log("ATTRIBUTE ============> ",$(`#TrainId1`).attr("trainId"))
+            var b = document.querySelector("#TrainId1");
+            b.setAttribute("trainId", trainData._id);
+            // $(`#TrainId1`).attr("trainId").val(trainData._id)
+            $(`#TrainId1`).val(trainData.TrainId)
+            $(`#TrainName1`).val(trainData.TrainName)
+            $(`#TrainStartLocation1`).val(trainData.TrainStartLocation )
+            $(`#TrainDestinationLocation1`).val(trainData.TrainDestinationLocation)
+            $(`#TrainCapacity1`).val(trainData.TrainCapacity)
+            $(`#NoOfBoggies1`).val(trainData.NoOfBoggies)
+            $(`#TicketPrice1`).val(trainData.TicketPrice)
+
+          })
+          // $(`name[TrainId]`).Text()
+      })
+
+      $('body').on('click','#editDoc', function(data){
+       const serialize = $('form').serialize();
+       const serializeData = `${serialize}&_id=${$(`#TrainId1`).attr("trainId")}`;
+       console.log(`${serialize}&_id=${$(`#TrainId1`).attr("trainId")}`);
+       
+        // const trainid = $(`#TrainId1`).val()
+        // const TrainName =     $(`#TrainName1`).val()
+        // const TrainStartLocation = $(`#TrainStartLocation1`).val()
+        // const TrainDestinationLocation = $(`#TrainDestinationLocation1`).val()
+        // const TrainCapacity = $(`#TrainCapacity1`).val()
+        // const NoOfBoggies = $(`#NoOfBoggies1`).val()
+        // const TicketPrice = $(`#TicketPrice1`).val()
+
+        // console.log($("button[value]").val())
+       $.ajax({
+         url: 'edit',
+         method: 'GET',
+        //  data: {id: $(`#TrainId1`).attr("trainId"), serialize}
+         data: serializeData
+       }).done(function(results){
+         console.log("SAVED RESULT ========> ", results)
+         if(results.modifiedCount > 0){
+            alert("Record inserted successfully");
+            getTrainsList(true);
+          }else{
+            alert("Something went wrong :(");
+          }
+
+          
+      //   // $('.t-button').show();
+      //   // $(".form").css("display","none");
+         
+       })
+     })
+
+  })
+  </script>
+</head>
+<body>
+      <div class="container"> 
+          <h1 class="t-heading">Railway CURD</h2>
+          <button class="t-button" id="insert">Insert Train Details</button>
+          <button class="t-button" id="view">View Train Details</button>
+          <button class="t-button" id="update">Update Train Details</button>
+
+          <div id="view-table"></div>
+          <div id="insertForm" style="width: 40%;"></div>
+
+          <form action="/edit" method="post" class="form1" style="display: none">
+            <label for="TrainId">Train Id: </label><br>
+            <input type="text" id="TrainId1" value="" name="TrainId" trainId="" class="input"><br><br>
+
+            <label for="TrainName">Train Name: </label><br>
+            <input type="text" id="TrainName1" value="" name="TrainName" class="input"><br><br>
+
+            <label for="TrainStartLocation">Start Location: </label><br>
+            <input type="text" id="TrainStartLocation1" name="TrainStartLocation" value="" class="input"><br><br>
+
+            <label for="TrainDestinationLocation">Destination Location: </label><br>
+            <input type="text" id="TrainDestinationLocation1" name="TrainDestinationLocation" value="" class="input"><br><br>
+
+            <label for="TrainCapacity">Capacity: </label><br>
+            <input type="number" id="TrainCapacity1" name="TrainCapacity" value="" class="input"><br><br>
+
+            <label for="NoOfBoggies">Boggies: </label><br>
+            <input type="number" id="NoOfBoggies1" name="NoOfBoggies" value="" class="input"><br><br>
+
+            <label for="TicketPrice">Ticket Price: </label><br>
+            <input type="number" id="TicketPrice1" name="TicketPrice" value="" class="input"><br><br>
+
+            <input type="button" value="Save" class="submit" id='editDoc'>
           </form>
           <hr>
       </div>

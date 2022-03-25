@@ -68,6 +68,13 @@ li {
   background-color: #b2b5da;
   border-radius: 20px;
   box-sizing: border-box;
+  padding: 20px;
+  text-align: start;
+}
+.form1 {
+  background-color: #b2b5da;
+  border-radius: 20px;
+  box-sizing: border-box;
   height: 100%;
   padding: 20px;
   width: 40%;
